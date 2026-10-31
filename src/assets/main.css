@@ -1,0 +1,64 @@
+@import './base.css';
+
+:root {
+  --background: rgba(13, 16, 16, 1);
+  --foreground: #ededed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: rgba(13, 16, 16, 1);
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.bg-custom-back {
+  background-color: rgba(26, 26, 26, 1);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.border-custom {
+  border-color: rgba(18, 18, 18, 1);
+  border-width: 1px;
+}
+
+.bg-custom-back-1 {
+  background-color: rgba(18, 18, 18, 1);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.bg-custom-back-lbl {
+  background-color: rgba(26, 26, 26, 1);
+}
+
+#app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Additional input styling for consistency */
+input::placeholder {
+  opacity: 0;
+}
+
+input:focus::placeholder {
+  opacity: 1;
+}
+
+.text-white-900 {
+  color: rgb(255, 255, 255);
+}
