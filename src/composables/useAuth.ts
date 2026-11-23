@@ -48,9 +48,14 @@ export function useAuth() {
 
         const savedUser = sessionStorage.getUser();
         if (savedUser) {
-          console.log("[AUTH] Found saved user:", savedUser);
-          user.value = savedUser;
-          isAuthenticated.value = true;
+          const isExpired = savedUser.expires && Number(savedUser.expires) * 1000 <= Date.now();
+          if (isExpired) {
+            sessionStorage.removeUser();
+          } else {
+            console.log("[AUTH] Found valid saved user:", savedUser);
+            user.value = savedUser;
+            isAuthenticated.value = true;
+          }
         }
       } else {
         console.log("[AUTH] AuthKeyz init failed:", result.message);

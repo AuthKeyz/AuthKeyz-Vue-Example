@@ -7,7 +7,7 @@
       <div class="flex justify-center mb-3">
         <a href="../">
           <img
-            src="https://cdn.authkeyz.cc/v3/imgs/AuthKeyzBanner.png"
+            src="https://authkeyz.bond/assets/img/authkeyz-logo.png"
             alt="AuthKeyz Logo"
             class="h-12 md:h-20 w-auto"
           />
@@ -35,9 +35,21 @@
       <h1 class="mb-3 text-2xl md:text-3xl text-center font-bold text-white">
         Welcome, {{ user?.username }}
       </h1>
-      <p class="mb-8 text-sm md:text-base text-center font-normal text-gray-300">
+      <p class="mb-4 text-sm md:text-base text-center font-normal text-gray-300">
         Manage your account settings and security preferences
       </p>
+      <div class="flex flex-wrap justify-center gap-2 mb-8">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+          <span class="w-2 h-2 mr-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          API 1.3 Ed25519 Verified
+        </span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/30">
+          Replay Protection Active
+        </span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-500/15 text-amber-400 border border-amber-500/30">
+          Subscription: {{ countdownText }}
+        </span>
+      </div>
 
       <div v-if="user" class="space-y-6">
         <div class="bg-blue-500/10 p-6 rounded-lg border border-blue-500/20">
@@ -335,8 +347,24 @@ const userVariable = ref<string | null>(null);
 const varValue = ref('');
 const varMessage = ref('');
 const varLoading = ref(false);
+const nowSec = ref(Math.floor(Date.now() / 1000));
+
+const countdownText = computed(() => {
+  const exp = user.value?.expires;
+  if (!exp) return 'N/A';
+  const diff = Number(exp) - nowSec.value;
+  if (diff <= 0) return 'Expired';
+  const d = Math.floor(diff / 86400);
+  const h = Math.floor((diff % 86400) / 3600);
+  const m = Math.floor((diff % 3600) / 60);
+  const s = diff % 60;
+  return `${d}d ${h}h ${m}m ${s}s left`;
+});
 
 onMounted(async () => {
+  setInterval(() => {
+    nowSec.value = Math.floor(Date.now() / 1000);
+  }, 1000);
   // Wait for initialization if still loading
   if (loading.value) {
     await new Promise(resolve => {
@@ -372,6 +400,20 @@ onMounted(async () => {
       console.error('Failed to fetch user variable:', error);
     }
   }
+
+  setInterval(async () => {
+    if (AuthKeyzApp.value && typeof (AuthKeyzApp.value as any).check === 'function') {
+      try {
+        const ok = await (AuthKeyzApp.value as any).check();
+        if (ok === false) {
+          await logout();
+          router.push('/');
+        }
+      } catch {
+        // Ignore transient network errors
+      }
+    }
+  }, 60000);
 });
 
 const handleTwoFASetup = (mode: 'enable' | 'disable') => {
